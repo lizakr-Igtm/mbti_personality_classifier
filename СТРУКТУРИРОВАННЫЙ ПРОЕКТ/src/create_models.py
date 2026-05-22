@@ -9,7 +9,6 @@ os.makedirs('models', exist_ok=True)
 
 print("Запуск обучения на большом датасете...")
 
-# Большой сбалансированный датасет, чтобы модель знала разные слова
 base_data = [
     ("я люблю читать книги думать один тишина уединение размышления психология философия одиночество самоанализ", "INTJ"),
     ("обожаю вечеринки тусовки друзья компания веселье общение люди движ клуб праздник новые знакомства", "ENFP"),
@@ -33,11 +32,10 @@ base_data = [
     ("зачем жить по расписанию это скучно лучшие моменты происходят неожиданно и спонтанно", "ESTP")
 ]
 
-# Искусственно расширяем датасет для стабильности Random Forest
 texts = []
 mbti_types = []
 for text, mbti in base_data:
-    for _ in range(10): # Дублируем примеры с легким шумом для стабильности весов
+    for _ in range(10):
         texts.append(text)
         mbti_types.append(mbti)
 
@@ -48,7 +46,6 @@ def clean_text(txt):
 
 texts_clean = [clean_text(t) for t in texts]
 
-# Настройка под русский язык
 vec = TfidfVectorizer(token_pattern=r'[a-zа-яё]+', min_df=1)
 X = vec.fit_transform(texts_clean)
 
@@ -57,7 +54,6 @@ y_ns = []
 y_tf = []
 y_jp = []
 
-# Исправлено раз и навсегда: жесткая проверка по индексам букв
 for mbti in mbti_types:
     y_ie.append(1 if mbti[0] == 'I' else 0)
     y_ns.append(1 if mbti[1] == 'N' else 0)
@@ -75,5 +71,3 @@ joblib.dump(models, 'models/rf_models.pkl')
 joblib.dump(vec, 'models/vectorizer.pkl')
 
 print("Все модели переобучены, русский язык поддерживается. Файлы сохранены в src/models/")
-
-
